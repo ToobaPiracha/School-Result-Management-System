@@ -1,0 +1,366 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+
+//Define global variables x, i, j, n
+char x;
+int i,j, n;
+
+struct student   //Define structure
+{
+    int id ;
+    char name[20];
+    float Math;
+    float English;
+    float Science;
+    float Urdu;
+    float average;
+
+}stu[3];
+
+
+
+/*----------------------------------
+
+
+
+
+
+------------------------------------*/
+void my_add()     //Get data and output, and finally exit
+{
+    FILE *fp;   //File pointer
+    char t;
+    int i;
+    if((fp = fopen("stu_dat","w")) == NULL)
+    {
+        printf("cannot open file \n");
+        return ;
+    }
+    for(i=0; i<3; i++)        //Input data
+    {
+        printf("Enter %d student ID:", i+1);
+        scanf("%d",&stu[i].id);
+        printf("Enter %d student name:", i+1);
+        scanf("%s",stu[i].name);
+        printf("Enter %d student Math score:", i+1);
+        scanf("%f",&stu[i].Math);
+        printf("Enter %d student English score:", i+1);
+        scanf("%f",&stu[i].English);
+        printf("Enter %d student Science score:", i+1);
+        scanf("%f",&stu[i].Science);
+        printf("Enter %d students Urdu marks:",i+1);
+        scanf("%f",&stu[i].Urdu);
+
+        stu[i].average = (stu[i].Math + stu[i].English + stu[i].Science + stu[i].Urdu)/4;
+        printf("\n");
+        fwrite(&stu[i], sizeof(struct student), 3, fp);   //Write the student data to the file and save
+    }
+    fclose(fp);  //Close file
+        system("cls");  //Clear screen
+    printf("num ID name Math English Science Urdu average\n");
+
+    for(i=0 ; i<3; i++)
+    {
+        printf("%d %d %s %.2f %.2f %.2f %.2f %.2f\n",
+                i+1 ,stu[i].id,stu[i].name,stu[i].Math,stu[i].English,
+                stu[i].Science,stu[i].Urdu, stu[i].average);
+        printf("\n");
+    }         //Display the entered data in format
+    printf("Press any key to exit : ");
+    getchar();
+    scanf("%c",&x);
+}
+
+
+/*----------------------------------
+
+
+
+------------------------------------*/
+void my_View()          //Sort the obtained data according to the average score from large to small and output the sorted data, and finally exit
+{   char x;
+    struct student temp;
+    FILE *fp;
+    if((fp = fopen("stu_dat","w")) == NULL)
+    {
+        printf("cannot open file\n");
+        return;
+    }
+    fread(stu, sizeof(struct student), 5, fp);       //Read data from hard disk file to memory
+
+    for(i=0; i<3; i++)
+        for(j=0; j<3-i; j++)          //Do bubble sorting, the small one is on the far right, from large to small
+            if(stu[j].average<stu[j+1].average)
+            {
+                temp = stu[j];
+                stu[j] = stu[j+1];
+                stu[j+1] = temp;
+            }
+    fwrite(stu, sizeof(struct student), 1, fp);               //Write the changed data to the hard disk file
+        fclose(fp);  //Close file
+        system("cls");  //Clear the screen
+    printf("num\tID\tname\tMath\tEnglish\tScience\tUrdu\tAverage\n");               //Display the modified data in format
+    for(i=0; i<3; i++)
+    {
+        printf("%d\t%d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+                i+1 ,stu[i].id,stu[i].name,stu[i].Math,
+                stu[i].English,stu[i].Science,stu[i].Urdu,stu[i].average);
+    }
+    printf("\n");
+    printf("Press any key to exit: \n");
+    getchar();
+    scanf("%c",&x);
+}
+
+
+/*----------------------------------
+
+
+
+
+------------------------------------*/
+void average(struct student mt[1])      //Obtain and output the average scores of mathematics, English, Science, and Urdu and finally exit
+{
+    int i;
+    char x;
+    float sum1 = 0, sum2 = 0, sum3 = 0,sum4=0;
+    float ave1, ave2, ave3,ave4;
+    for(i=0; i<1; i++)
+    {
+        sum1 = sum1 + mt[i].Math;
+        sum2 = sum2 + mt[i].English;
+        sum3 = sum3 + mt[i].Science;
+        sum4 = sum4 + mt[i].Urdu;
+    }    //Find the sum of math, English and Science scores respectively
+    ave1 = sum1 / 4;
+    ave2 = sum2 / 4;
+    ave3 = sum3 / 4;
+    ave4 = sum4 / 4;         //Find the average scores of mathematics, English, Science, and Urdu respectively
+    printf("Average score of the class:\n");
+    printf("Math     : %.2f\n", ave1);
+    printf("English  : %.2f\n", ave2);
+    printf("Science  : %.2f\n", ave3);
+    printf("Urdu     : %.2f\n", ave4);
+    printf("\n");     //Output the average scores of mathematics, English, Science, and Urdu respectively
+    printf("Press any key to go back: ");
+    getchar();
+    scanf("%c",&x);
+}
+
+
+
+/*----------------------------------
+
+
+
+
+------------------------------------*/
+void my_modify_function( int n )  //        Only modify the basic data of a student whose student number is n and output
+                                  //The revised total data, if there is no student with student ID n, an error will be reported, and finally exit
+{
+    FILE *fp;
+    FILE *ofp;
+    if((fp = fopen("stu_dat","w+")) == NULL)
+    {
+        printf("cannot open file \n");
+        return ;
+    }
+    fread(stu, sizeof(struct student), 1, fp);    //Read the data in the file
+    for(i=0; i<3; i++)
+    {
+        if(n == stu[i].id)  //  Find a student whose student number is n and modify its data
+        {
+
+            printf("Enter  student name: ");    //The revised data include: name, mathematics, English, Science, Urdu scores, average scores of three subjects
+            scanf("%s",stu[i].name);
+            printf("Enter student Math score: ");
+            scanf("%f",&stu[i].Math);
+            printf("Enter student English score: ");
+            scanf("%f",&stu[i].English);
+            printf("Enter student Science score: ");
+            scanf("%f",&stu[i].Science);
+            stu[i].average = (stu[i].Math + stu[i].English + stu[i].Science + stu[i].Urdu)/4;
+            for(i=0; i<3; i++)
+                fwrite(&stu[i],sizeof(struct student),3,fp);   //Write the modified data back into the file
+            fclose(fp);   //Close file
+            printf("\n");
+            system("cls");   //Clear screen
+            printf("num\tID\tname\tMath\tEng\tScience\tUrdu\taverage\n");    //Output total data in specified format
+            for(i=0 ; i<3; i++)
+                printf("%d\t%d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%0.2f\n",
+                         i ,stu[i].id,stu[i].name,stu[i].Math,stu[i].English,stu[i].Science,stu[i].Urdu,stu[i].average);
+            printf("\n");
+            printf("Press any key to go back : ");   //Press any key to go back
+            getchar();
+            scanf("%c",&x);
+            return;
+        }
+    }
+    fclose(fp);   //If there is no student with student ID n, close the file
+    printf("cannot find the student ID!");   //Report an error
+    printf("\n");
+    printf("Press any key to go back : ");   //drop out
+    getchar();
+    scanf("%c",&x);
+}
+
+/*----------------------------------
+
+
+
+
+------------------------------------*/
+void my_modefy()     //It is required to enter the student ID n that needs to be modified, and call the function my_modify_function to make specific modifications
+{
+    int n;
+            while(1)
+            {
+            printf("Enter modified student ID:\n");
+            scanf("%d",&n);
+            my_modify_function(n);
+            break;
+            }
+}
+
+
+
+/*----------------------------------
+
+
+
+
+------------------------------------*/
+void my_find()     //Obtain and output the basic data of a certain student according to the student number, and finally exit
+{
+    int fd;
+    printf("Enter the student ID : ");   //Enter the student ID
+    scanf("%d",&fd);
+    system("cls");   //Clear screen
+    for(i=0; fd != stu[i].id; i++)  ;                     //        If i does not match the student's student ID, do nothing and let i continue to accumulate
+                                                          //  End the for loop until i is equal to the student’s student ID, that is, find all the students according to the input student ID fd
+                                                          //  Ask students to stu[i].
+    printf("num\tID\tname\tMath\tEnglish\t   Science\n");
+    printf("%d\t%s\t%.2f\t%.2f\t%.2f\t\t%.2f\n",           //Output the basic data of the student in format
+                stu[i].id,stu[i].name,stu[i].Math,
+                stu[i].English,stu[i].Science,stu[i].average);
+    printf("Press any key to go back : ");    //drop out
+    getchar();
+    scanf("%c",&x);
+}
+
+
+
+
+
+/*----------------------------------
+
+
+
+
+------------------------------------*/
+void my_exit(char *T)   //drop out
+{
+            printf("--------------------------------------\n\n\n\n\n\n\n\n\n\n\n");
+            printf("Would you really like to exit Y/N : ");
+            getchar();      //Accept the entered characters
+            scanf("%c",T);
+}
+int my_doc()
+{
+        system("cls");  //Clear the screen
+        printf("\t\t\t*******************************************************\n");
+        printf("\t\t\t*******************************************************\n");
+        printf("\t\t\t**                                                   **\n");
+        printf("\t\t\t**                                                   **\n");
+        printf("\t\t\t**         SCHOOL RESULT MANAGEMENT SYSTEM           **\n");
+        printf("\t\t\t**                                                   **\n");
+        printf("\t\t\t**          1 : Add students grades                  **\n");     //Call function my_add()
+        printf("\t\t\t**          2 : View all results                     **\n");     //Call function my_View()
+        printf("\t\t\t**          3 : Average score of the class           **\n");     //Call function average
+        printf("\t\t\t**          4 : Find student score                   **\n");     //Call the function my_find()
+        printf("\t\t\t**          5 : Modify student grades                **\n");     //Call function my_modefy(), my_modify_function
+        printf("\t\t\t**          0 : Exit                                 **\n");     //Call function my_exit
+        printf("\t\t\t**                                                   **\n");
+        printf("\t\t\t**                                                   **\n");
+        printf("\t\t\t*******************************************************\n");
+        printf("\t\t\t*******************************************************\n");
+        printf("\n\n\n\n");
+        printf("\tSelect:");
+        scanf("%d",&n);     //Receive selection results
+        return n;
+}
+
+/*----------------------------------
+
+
+
+
+------------------------------------*/
+int main()
+{
+    char name[20]="admin",_name[20];
+    char password[10]="project",_password[10];
+    int f1,f2;
+    int i;
+    char T;
+    printf("\t\t ******* WELCOME TO THE SCHOOL RESULT MANAGEMENT SYSTEM *******\n\n\n");
+    printf("\t\t Administrator please log-in\n\n");
+    for(i=0;i!=7;)
+    {
+      printf("\t Username:");
+      gets(_name);
+      f1=strcmp(_name,name);
+      printf("\t Password:");
+      gets(_password);
+      f2=strcmp(_password,password);
+      if(f1==0 && f2==0)
+      {
+        printf("\t\t\t\t Successful login!");
+        break;
+      }
+      else
+      {
+        printf("\n\t\t Username or password is wrong!");
+        printf("You have %d chances\n\n",4-i);
+        i++;
+      }
+
+    }
+    if(i==5)
+    {printf("Sorry, you have entered too many times\n");
+    return 0;}
+
+    do     //Execute the do statement first
+    {
+        switch(my_doc())      //Switch statement: first call the function my_doc() to get the return value n, and then judge
+
+        {
+            case 1:           //If the return value n of the function my_doc is 1, call the function my_add() and end the switch statement
+                my_add();
+                break;
+            case 2:
+                my_View();
+                break;
+            case 3:
+                average(stu);
+                break;
+            case 4:
+                my_find();
+                break;
+            case 5:
+                my_modefy();
+                break;
+            case 0:
+                my_exit(&T);     //Function address transfer can change the value of the actual parameter T
+                break;
+            default:           //If n does not meet the above conditions, an error will be reported
+                printf("Error! Please input the new.\n");
+        }
+    }while(T != 'y' && T != 'Y');     //        If it is judged that the return value n is 0 and the my_exit function is called, the character T is assigned an initial value,
+                                      // Then judge whether T is ‘y’ or ‘Y’ and if so, do not execute the do..while statement
+                                      //        Conversely, if the value of n is not 0, but any one of 1, 2, 3, 4, and 5, then
+                                      // After calling the corresponding function, the while statement is true, return to continue to execute the do statement.
+    system("cls");   //Clear screen
+    return 0;
+}
